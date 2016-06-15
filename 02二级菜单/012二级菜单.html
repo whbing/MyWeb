@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<!--
+	1.构造有宽度的盒子<div class="logo"></div>,宽度100%,使之铺满
+      给导航条加边框border，如border和margin都有top left right bottom之分
+    2.span标签设置display:block设置为块级元素。
+      里面的文字字体，大小都用font控制
+    3.增加内上边距实现居中，注意这时要调整盒子的高度
+    4.给每个li之间添加小竖线，实际上是添加背景图片。
+      css添加背景图片的方法background:url("") no-repeat right center效果
+	---------------------------------------------------------
+    5.li的基本样式是一样的。但是鼠标放在当前li上颜色不一样。这时我们就要把<br>
+	  其中一个加上一个特定的class，比如.hover
+    6.二级菜单就是在li标签里再写盒子
+  知识点：(1) li的二级菜单在li下方显现出来，涉及“绝对定位”
+  		 (2) 由于二级菜单在li里，我们给li加"相对定位"：li本来的定位
+         (3) 给二级菜单加“绝对定位”，就找到了li。通过top等调整
+    7.二级菜单里可以放图片
+    ----------------------------------------------------------
+    8.引入jquery制作动画
+     (1) 对象.addClass("name") 添加一个名为name的样式
+	 (2) 对象.siblings()       还是返回对象|无参时所有同胞对象（不含本身）；
+                                         有参时，该对象里的选择性所有对象
+     (3) 对象.removeClass()    移除class
+     (4) $(selector).hover(inFunction,outFunction)鼠标移入和移出
+     (5) show()、slidedDown()、slideUp()都可起显示元素的作用，可传时间参数
+     (6)
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<style>
+*{
+	margin:0px;
+	padding:0px;
+}
+#logo{
+	width:100%;
+	height:74px;
+	background:#C6F;
+	/*margin-top:20px;*/
+	border-top:2px solid red;  //有top left right bottom之分
+	
+}
+#logo ul{
+	margin:0px auto;  /*ul在外边div里上下不要边距，左右边距居中*/
+	/*border:1px solid blue;*/
+	width:75%;
+	height:74px;  /*和外边一致*/
+}
+#logo ul li{
+	width:140px;  /*每个li设为140px宽度*/
+	height:54px;  /*和ul宽一样,注意padding占了20，所以这里只设54*/
+	/*border:1px solid red;   /*测试做区分*/
+	float:left;
+	list-style-type:none;  /*去掉li前边的圆点*/
+	
+	font-size:18px;        /*以下为字体*/
+	font-family:"黑体";     /*这里为改变字体*/
+	
+	text-align:center;     /*li里面的内容水平居中*/
+	/*vertical-align:middle; 垂直居中只对块级元素生效*/
+/*要里面内容垂直居中，我们加内边距实现，同时注意增加内边距会改变盒子大小，同时调整宽高*/
+	padding-top:20px;
+	
+	background:url("img/banner.png") no-repeat right center;
+	
+	position:relative;         /*后边一个是要相对这个定位的*/
+}
+#logo ul a{                    /*超链接修改自己的样式*/
+	color:purple;              /*给超链接加颜色*/
+	text-decoration:none;      /*去掉超链接的下划线*/
+}
+#logo ul li span{
+	display:block;             /*将span变为块级元素，使之能够换行显示*/
+}
+
+/*以下是关于当前标签变色的几种写法*/
+
+/*第一种写法*/
+/*#logo ul .hover{              
+	background-color:#ccc;
+}*/
+
+/*第二种写法：li和.hover不要分开,表示li标签的这个class*/
+#logo ul li.hover{             
+	background-color:#F9C;      
+}
+
+/*第三种写法：指定到具体的a和span标签*/
+#logo ul li.hover a{
+	color:#ddd;               /*这是将文本变色，上边变色的是背景*/
+}
+
+#logo ul li .Menu{
+	width:300px;
+	height:150px;
+	background-color:#ccc;	
+	position:absolute;
+	top:74px;               /*上一级是li，li高74*/
+	display:none;           /*将二级隐藏*/
+}
+</style>
+</head>
+<body>
+	<div id="logo">
+    	<ul>
+        	<li class="hover"><a href="#">首页<span>Home</span></a></li>
+            <li><a href="#">我的照片</a></li>
+            <li><a href="#">旅游<span>travel</span></a>
+            	<div class="Menu">
+                </div>
+            </li>
+            <li><a href="#">摄影<span>photo</span></a>
+            	<div class="Menu">
+                </div>
+            </li>
+            <li><a href="#">项目一<span>one</span></a></li>
+            <li><a href="#">项目二<span>two</span></a></li>
+            <li><a href="#">项目三<span>three</span></a></li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="js/jquery-1.10.1.min.js">
+</script>
+<script>
+	$("#logo ul li").hover(function(){
+		$(this).addClass("hover").siblings().removeClass("hover");
+		//上边添加class的同时又移除了其他的class
+		$(this).find(".Menu").show(500);
+		//或者$(this).find(".Menu").slideDown(500);
+	},function(){
+		//或者$(this).find(".Menu").hide(500);
+		$(this).find(".Menu").slideUp(100);
+		//若想移走鼠标时，也去掉hover的样式，则写以下代码
+		$(this).removeClass("hover");
+	});
+	
+</script>
+</html>
