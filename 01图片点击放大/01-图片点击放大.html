@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--1.div盒子模型。如本页面Main
+    2.*{margin:0px;padding:0px}避免了兼容性问题。去掉了所有标签自带边距
+    3.控制每个li的margin。
+	4.浮动：让分行显示的li依次排列，变成水平
+    5.给li加border，做出类似照片相框的样式，边框线的风格
+    6.给li加一个overflow:hidden属性。如li内的元素超过li则不显示
+    7.li中的img标签设置100%填充li（宽或高）。
+      注意：img没有width属性，要么给其style行内样式，要么给css样式。
+	-----------------------------------------------------
+    8.半透明层.宽度为整个屏幕
+    9.利用“固定定位”fixed做遮罩层。rgba()表示颜色值及透明度
+    10.利用“绝对定位”position:absolute（这里固定和绝对一样）做大图展示
+    -----------------------------------------------------
+    11.wrap -- 里面装三块：左图标、中间大图、右图标。
+               这三块都在wrap里绝对定位
+               大div盒子里装3个小盒子
+    -----------------------------------------------------
+    12.整个屏幕分为li层、半透明层、wrap层。将后两个层隐藏display:none
+       当点击的时候才让显示出来。
+    -----------------------------------------------------
+    13.引入jquery制作点击图放大的效果
+    (1) jquery点击对象的函数写法；
+    (2) 对象.show();  展示这个对象，能把display:none的对象显示出来
+    (3) 对象.hide();  隐藏对象
+    (4) 对象.find("") 找该对象下的某某
+    (5) $(this)      当前对象
+    (6) 对象.attr()   当一个参数时，表示取该属性值；当两参数时，后者赋给前者
+    (7) 对象.index()  获得同胞元素的序列号
+    (8) 对象.eq(index)要求该序列必须有index值才能用eq，找到对应索引的对象
+-->
+<style>
+	*{
+		margin:0px;   /*有的标签自带margin，全部去除*/
+		padding:0px;  /*全部去除padding，需要的时候再加。如li带padding*/
+	}
+	#Main{
+		width:1000px; /*Main盒子的大小*/
+		height:600px;
+		background:#ccc;
+		margin:20px auto 0px;/*上 左右 下，这里左右设为自动居中*/
+	}
+	#Main ul{
+		/*border:2px solid blue;/*加边框完全为了调试，找到边界*/
+	
+	}
+	#Main ul li{
+		width:310px;
+		height:280px;
+	  /*border:1px solid red;/*测试：加上边框能够清楚地看到这个样式的大小*/
+		border:4px solid white;   /*做出一个图片边框的样式*/
+		float:left;               /*浮动，让li依次排列*/
+		list-style-type:none;     /*列表前边的圆点去掉*/
+		margin:10px 0 0 10px;     /*上 右 下 左 每个li之间的距离*/
+		box-shadow:0px 0px 20px #FFCCFF;/*水平 竖直 半径 阴影颜色*/
+		overflow:hidden;          /*li中放置了img，超出li的隐藏*/
+	}
+	/*半透明层样式开始*/
+	.gray{
+		position:fixed;            /*fixed位相对浏览器窗口定位*/
+		left:0;
+		top:0;                     /*做遮罩层*/
+		width:100%;
+		height:100%;
+		background:rgba(0,0,0,0.5);	/*加了透明度就是这样写，a表示透明度*/
+	
+		display:none;/*当点击的时候才让显示*/
+	}
+	.wrap{
+		position:absolute;
+		width:800px;     /*比showImg要宽一点，还要放左右图标*/
+		height:400px;  /*根据showImg来调整*/
+		top:100px;
+		left:280px;
+		border:2px solid blie;
+		
+		display:none;/*当点击的时候才让显示*/
+	}
+	/*展示图片开始*/
+	.wrap .showImg{
+		/*相对定位relative：相对于本身应该的位置
+		* 绝对定位absolute：[脱离文本流]，以上一个有定位的（不管什么类型）
+		*                  父级元素来定位
+		* 固定定位fixed：   相对浏览器窗口
+		*/
+		
+		position:absolute;  /*父级wrap*/
+		width:650px;
+		height:400px;
+		background:red;
+		top:0px;   /**/
+		left:65px;   
+		
+		border:8px solid #fff;  /*加border，做成相框效果*/
+		
+		overflow:hidden;  /*里面的内容（照片）若有溢出不显示*/
+	}
+	.wrap #icon_left{
+		position:absolute;
+		width:60px;      /*构造一个60*400的左边条*/
+		height:400px;
+		left:0px;
+		/*border:3px solid red;/*测试用*/	
+		overflow:hidden;  /*边条里放的图片若超出不显示*/	
+	}
+	.wrap #icon_right{
+		position:absolute;
+		width:60px;      /*构造一个60*400的又边条*/
+		height:400px;
+		right:5px;
+		/*border:3px solid red;*/	
+		overflow:hidden;  /*边条里放的图片若超出不显示*/		
+	}
+	#icon_left img{
+		position:absolute;
+		top:120px;       /*边条里的图片竖直居中*/
+	}
+	#icon_right img{
+		position:absolute;
+		top:120px;       /*边条里的图片竖直居中*/
+	}
+</style>
+<title>图片点击放大</title>
+</head>
+
+<body>
+
+
+
+
+<!--Main 图片列表开始，Main是一个居中的盒子-->
+<div id="Main">
+	<!--Main的盒子中ul，ul里放多个li-->
+    <!--给li一个left左浮动，否则li会摆很多列-->
+    <ul>
+    	<!--自定义了一个bigsrc属性，其实不定义用本身的也行-->
+    	<li><img src="img/1.jpg" bigsrc="img/1.jpg" style="height:100%;"/></li>
+        <li><img src="img/2.jpg" bigsrc="img/2.jpg" style="height:100%;"/></li>
+        <li><img src="img/3.jpg" bigsrc="img/3.jpg" style="height:100%;"/></li>
+		<li><img src="img/4.jpg" bigsrc="img/4.jpg" style="height:100%;"/></li>
+        <li><img src="img/5.jpg" bigsrc="img/5.jpg" style="height:100%;"/></li>
+        <li><img src="img/6.jpg" bigsrc="img/6.jpg" style="height:100%;"/></li>
+    </ul>
+</div>
+<!--Main 图片列表结束-->
+
+<!--半透明层开始-->
+<div class="gray"></div>
+<!--半透明层结束-->
+
+<!--展示图片开始 wrap里包含展示图片（showImg带边框）及左右图标icon-->
+<div class="wrap">
+	<div class="showImg">
+		<img src="" style="width:100%;" />
+	</div>
+    <div id="icon_left">
+    	<img src="img/left.png" style="width:100%;">
+    </div>
+    <div id="icon_right">
+    	<img src="img/right.png" style="width:100%;">
+    </div>
+</div>
+<!--展示图片结束-->
+</body>
+
+<!--引入jquery-->
+<script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript">
+
+var _li_index=0;  //点li时要用，点icon时也要用。所以声明为全局
+var bigImg=null;  //同样在icon时也要用
+$("#Main ul li").click(function(){  //点li时，半透明层个wrap层显现
+	//alert("测试");
+	$(".gray").show();
+	$(".wrap").show();
+	bigImg=$(this).find("img").attr("bigsrc");
+	//alert(bigsrc);
+	$(".wrap .showImg img").attr("src",bigImg);
+	
+	
+	_li_index=$(this).index(); //保存当前li的索引，便于点按钮时也能用
+	//alert(_li_index);
+	
+});
+$(".gray").click(function(){
+	$(".gray").hide();
+	$(".wrap").hide();
+}); 
+
+//点击左边按钮效果
+
+$(".wrap #icon_left").click(function(){
+	_li_index--;
+	if(_li_index<0){_li_index==0;alert("0")};
+   bigImg=$("#Main ul li").eq(_li_index).find("img").attr("bigsrc");
+	$(".wrap .showImg img").attr("src",bigImg);
+	//已经显示了，我们要做的就是改变它的地址
+});
+
+//点击右边按钮效果
+
+$(".wrap #icon_right").click(function(){
+	_li_index++;
+	alert(_li_index);
+	if(_li_index>5) {_li_index==5;alert(5);};  //假设有6张图，最大索引为5
+   bigImg=$("#Main ul li").eq(_li_index).find("img").attr("bigsrc");
+	$(".wrap .showImg img").attr("src",bigImg);
+	//已经显示了，我们要做的就是改变它的地址
+});
+</script>
+</html>
