@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<!--
+	1 一个showImg的盒子
+    2 当盒子的父级是浏览器时，宽和高都是百分比时，一定要绝对定位
+    ----------------------------------------------------
+    3 juery:
+      (1) hide() 隐藏
+      (2) show() 显示，可带参（时间)
+      (3) replace()将字符串替换想要的
+      (4) attr() 两个参数时，是将后者赋给前者
+      	  .css()
+          .animate()
+          渐变的动画效果：加一个css样式不透明度0，在一定时间变成不透明度为1
+          .css("opacity",0).animate({"opacity":1},500);
+      (5) 对于同胞元素如li要会利用索引index来找上一个、下一个
+      	  eq() 同胞元素配合eq、配合index()来使用
+本案例说明：小图是同胞li，大图只是一个。通过eq获得的是索引，对应的是同胞li。
+      索引变化引起的是同胞li的变化，并不能引起大图的变化。
+      思路是：先对应的小图li，在对应到大图
+      （6） :last选择器 获得同胞元素的最后一个。如li:last
+          $("li:last").index() 获得li的最后一个索引
+      ----------------------------------------------------------
+     4 自定义函数，并写出函数名调用。
+     5 关于循环执行同一个动作，我的想法：
+             function autoPlay(){
+                _index++;
+                alert("11");
+                autoPlay();    //自己调用自己
+             }
+             autoPlay();
+      事实上，用定时器就是循环执行（相当于while）：
+      js有两个定时器，jq也有封装过的定时器
+      说明：setInterval无限循环，但chrome中可能出问题；
+           setTimeout执行一次，可以模拟serInterval
+     6 重复使用的代码可以放在一个函数里。如play和pause的切换（本案例没有）
+    
+
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<style>
+*{
+	margin:0;
+	padding:0;
+}
+
+/*************1 showImg***************/
+#showImg{
+	width:100%;
+	height:100%;      /*宽和高都是百分数，所以一定要绝对定位*/
+	background:#CFC;
+	position:absolute;
+	
+	overflow:hidden;  /*超出部分隐藏*/
+}
+
+/****************2 imgList**********************/
+#imgList{
+	width:570px;
+	height:450px;
+	background:rgba(0,0,0,0.5);
+	position:absolute;
+	top:100px;
+	left:400px;
+}#imgList .title{
+	width:570px;
+	height:46px;
+	background:#ccc url(images/title_bg.jpg);  /*背景图重复的平铺*/
+	color:#fff;                                /*这里指文字的颜色*/
+	font-family:"微软雅黑";font-size:12px;
+	text-indent:20px;                           /*首行缩进*/
+	line-height:46px;      /*注意line-height使居中只对文字有效*/
+	
+}
+/****注意 img和.close没有分割，表示img里的class****/
+#imgList .title img.close{
+	float:right;
+	margin:10px 10px 0 0;
+}
+#imgList ul li{
+	width:150px;
+	height:105px;
+	border:4px solid #fff;
+	list-style-type:none;     /*去掉列表的小圆点*/
+	float:left;               /*注意float与position*/
+	margin:10px 15px;
+}
+
+/*********3 button***********/
+#button{
+	width:100%;
+	height:62px;
+	background:url("images/nav-bg.png"); /*重复的平铺*/
+	position:absolute;
+	bottom:0px;
+}
+#button .but_con{
+	width:230px;
+	height:52px;      /*由于padding还占了10px*/
+	/*background:red;   测试用*/
+	margin:0 auto;    /*水平居中*/
+	padding-top:10px; /*增加内上边距，主要是为了让其中元素水平居中*/
+}
+</style>
+</head>
+<body>
+
+<!--1 盒子是showImg-->
+<div id="showImg">
+	<img src="images/1.jpg" width="100%"/>
+</div>
+
+<!--2 列表框-->
+<div id="imgList">
+	<!--2.1-->
+	<div class="title">图片相册
+    	<img class="close" src="images/close.png"/>
+    </div>
+    <!--2.2-->
+    <ul>
+    	<li><img src="images/s_1.jpg"/></li>
+        <li><img src="images/s_2.jpg"/></li>
+        <li><img src="images/s_3.jpg"/></li>
+        <li><img src="images/s_4.jpg"/></li>
+        <li><img src="images/s_5.jpg"/></li>
+        <li><img src="images/s_6.jpg"/></li>
+        <li><img src="images/s_7.jpg"/></li>
+        <li><img src="images/s_8.jpg"/></li>
+        <li><img src="images/s_9.jpg"/></li>
+    </ul>
+</div>
+
+<!--3 控制条-->
+<div id="button">
+	<div class="but_con">
+    	<img class="album" src="images/album.png" />
+        <img class="back" src="images/back_dull.png" />
+        <img class="play" src="images/play_dull.png" />
+        <img class="forward" src="images/forward_dull.png" />
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="js/jquery.js">
+</script>
+<script>
+	var simg;
+	var bimg;
+	var _index=0;
+	var last_index=$("#imgList ul li:last").index();
+	var flag=1;      //播放标识符
+	
+	$("#imgList .title .close").click(function(){
+		$("#imgList").hide();
+	});
+	$("#button .but_con .album").click(function(){
+		$("#imgList").show(500);
+	});
+	$("#imgList ul li").click(function(){
+		_index=$(this).index();
+		simg=$(this).find("img").attr("src");	
+		bimg=simg.replace('s_','');          //将s_替换成没有
+		//alert(bimg);
+		$("#showImg img").attr("src",bimg).css("opacity",0.3).animate({"opacity":1},500);
+		$("#imgList").hide(200);
+	});
+	
+	/*按钮右控制*/
+	$("#button .but_con .forward").click(function(){
+		clearTimeout(t);          //点击下一张时清除自动播放定时器
+		$("#button .but_con .play").attr("src","images/pause_dull.png");
+		flag=0;                   //同时改变播放图片及flag状态
+		
+		_index++;
+		//alert(_index);
+		//如果到最后一个，让其转到第一个即索引0
+        if(_index>last_index){_index=0;/*alert(_index);*/};
+		simg=$("#imgList ul li").eq(_index).find("img").attr("src");
+		bimg=simg.replace('s_','');          //将s_替换成没有
+		$("#showImg img").attr("src",bimg).css("opacity",0.3).animate({"opacity":1},500);
+		$("#imgList").hide(200);
+	});
+	
+	/*按钮左控制*/
+	$("#button .but_con .back").click(function(){
+		clearTimeout(t);          //点击上一张时清除自动播放定
+		$("#button .but_con .play").attr("src","images/pause_dull.png");
+		flag=0;                   //同时改变播放图片及flag状态
+		
+		_index--;
+		//alert(_index);
+		//如果已经到了第一个，让其转到最后一个
+        if(_index<0){_index=last_index;/*alert(_index);*/};
+		simg=$("#imgList ul li").eq(_index).find("img").attr("src");
+		bimg=simg.replace('s_','');          //将s_替换成没有
+		$("#showImg img").attr("src",bimg).css("opacity",0.3).animate({"opacity":1},500);
+		$("#imgList").hide(200);
+	});
+	
+	//自动播放
+	//自定义一个函数
+	var t;
+	function moveForward(){
+		
+	    if(_index>last_index){_index=0;/*alert(_index);*/};
+		simg=$("#imgList ul li").eq(_index).find("img").attr("src");
+		bimg=simg.replace('s_','');          //将s_替换成没有
+		$("#showImg img").attr("src",bimg).css("opacity",0.3).animate({"opacity":1},500);
+		_index++;     //这里放在后面保证第一张会播放
+	};
+	
+	function autoPlay(){
+		moveForward();
+		t= setTimeout("autoPlay()",2000);
+	};
+	//调用自定义的函数
+	autoPlay();
+	
+	//点击暂停和播放按钮时
+	$("#button .but_con .play").click(function(){
+		if(flag==1){    //已经在自动播放了
+			clearTimeout(t);
+		   $("#button .but_con .play").attr("src","images/pause_dull.png");
+		    flag=0;     //让flag=0处于暂停状态
+		}else{
+			autoPlay();    //让其自动播放
+			$("#button .but_con .play").attr("src","images/play_dull.png");
+			flag=1;        //让其处于暂停状态
+		};
+	});
+</script>
+</html>

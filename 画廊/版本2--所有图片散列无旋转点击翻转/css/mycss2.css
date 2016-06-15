@@ -1,0 +1,102 @@
+*{padding:0;margin:0;}
+		body{
+			background-color:#fff;
+			color:#555;
+			font-family:'Avenir Next','Lantinghei SC';
+			font-size:14px;
+		}
+		.wrap{
+			width:100%;
+			height:600px;
+			position:absolute;
+			top:50%;
+			margin-top:-300px;  /*设置为高度的一半，可以垂直居中*/
+			background-color:#333;	
+			overflow:hidden;
+			
+			/*为wrap增加-webkit-perspective样式*/
+			-webkit-perspective:800px;  /*为了能让3d效果图显示出来,在调试界面可填*/
+			
+		}
+		/*海报格式*/
+		.photo{
+			width:260px;
+			height:320px;
+			
+			position:absolute;
+			z-index:1;
+			box-shadow:0 0 1px rgba(0,0,0,.01);	/*a表示透明度*/	
+		}
+		.photo .side{
+			width:100%;
+			height:100%;
+			background:#eee;
+			position:absolute;   /*使用绝对定位，相对于其之前已定位的父元素photo*/
+			top:0;
+			right:0;
+			
+			padding:20px;
+			box-sizing:border-box; /*内容和padding都在border内显示*/
+      							   /*去掉这句将不能展示3d效果*/
+		}
+		.photo .side-front{}
+		.photo .side-front .image{
+			width:100%;
+			height:250px;
+			line-height:250px;      /*设置了line-height，即使没有这么高，会垂直居中*/
+			overflow:hidden;	    /*超出高度的会隐藏*/		
+		}
+		.photo .side-front .image img{
+			width:100%;	   			/*相当于上一级100%宽image*/
+			
+		}
+		.photo .side-front .caption{
+			text-align:center;
+			font-size:16px;
+			line-height:50px;
+		}
+		.photo .side-back{}
+		.photo .side-back .desc{
+			color:#666;
+			font-size:14px;
+			line-height:1.5em;
+		}
+		/*当前选中的海报样式*/
+		.photo_center{
+			width:260px;
+			height:320px;
+			left:50%;          /*当前的照片水平垂直居中*/
+			top:50%;
+			margin:-160px 0 0 -130px;  /*为之前的一半*/
+			z-index:999;               /*不会让其他的遮挡*/
+		}
+		.photo-wrap{
+			position:absolute;
+			width:100%;
+			height:100%;
+						
+			/*让其子元素都保持一致的3d性*/
+			-webkit-transform-style:preserve-3d;
+			/*给其加样式改变时有动画效果*/
+			-webkit-transition:all 0.6s;
+		}
+		
+		.photo-wrap .side-front{
+			-webkit-transform:rotateY(0deg);	
+		}
+		.photo-wrap .side-back{
+			-webkit-transform:rotateY(180deg); /*会沿y轴对折（字是反的）*/
+		}
+		/*通用的side（包括front和back都适用）*/
+		.photo-wrap .side{
+			-webkit-backface-visibility:hidden;   /*是否可以看到后边（相当于纸背面）*/
+			/*配合transform来用，旋转后能不能透视到后边这里不可以。90度之前都相当于前面*/
+		}
+		/*前边一个状态时，再给photo_wrap加一个样式*/
+		.photo_front .photo-wrap{
+			-webkit-transform:rotateY(0deg);
+		}
+		/*后边一个状态时，再给photot_wrap加一个样式*/
+		.photo_back .photo-wrap{
+			-webkit-transform:rotateY(180deg);
+		}

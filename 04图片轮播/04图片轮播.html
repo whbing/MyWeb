@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<!--
+	1 轮播图原理：在10*100的盒子里播放，实际上10*200的空间放了两张图片，
+      实现两张轮播。里面的盒子“绝对定位”，所以外盒写“相对定位”
+    2 img与img之间有间隙。将img设为display:black,就解决了间隙问题。
+    3 绝对定位会在最上层显示。所以，同级元素在前边的如有“绝对定位”，后边的在后边显示
+      写在后边的绝对定位还在写在前边的绝对定位的上边显示。
+    4 border-radius:10px;   /*相当于一个圆形的背景，将背景切成圆形*/
+    5 box-shadow:0px 0px 10px #000;  /*四个参：水平偏移、竖直偏移、半径、颜色*/
+    --------------------------------------------------------------
+    6 jquery
+      (1) $(this).addClass("hover").siblings().removeClass("hover");
+      (2) hover()    可以写两个参数，表移入和移除
+      (3) index()    同胞元素有关利用序列号。如li标签
+      (4) animate()  涉及到动画，表示从之前一个状态到新的状态
+      (5) 如何获取同胞元素的长度 :last
+      (6) 定时器控制循环播放
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<style>
+*{
+	margin:0;
+	padding:0;
+}
+
+/*************1 flash***************/
+#flash{
+	width:600px;
+	height:400px;             /*宽和高都是百分数，所以一定要绝对定位*/
+	background:#CFC;
+	position:relative;        /*本身不影响，主要为子元素服务*/
+	/*top:100px;
+	left:400px;*/
+	margin:100px auto 0;
+	border:5px solid blue;
+	
+	overflow:hidden;        /*超出部分隐藏*/
+}
+/*************1.1 flash***************/
+#flash .scroll{
+	
+	width:600px;
+	height:1200px;             /*高度设为外框的3倍，表明三张图片轮播*/
+	/*background:#ccc;*/        /*这里注释不要写成HTML注释*/
+	position:absolute;
+
+}
+
+#flash .scroll img{
+	display:block;
+	height:33.33333%;         /*其父级为scrol，要容纳3张图*/      
+
+}
+
+/****************1.2 button**********************/
+#flash ul.button{
+	width:72px;      /*20*3+4*2*/
+	height:20px;
+	/*border:1px solid red;*/
+	position:absolute;
+	bottom:10px;
+	right:10px;
+	
+}
+#flash ul.button li{
+	list-style-type:none;
+	width:20px;
+	height:20px;
+	background:#666;
+	margin:0px 2px;             /*li与li之间距离*/
+	/*border:solid 2px red;*/
+	float:left;
+	text-align:center;
+	line-height:20px;           /*文字位置居中*/
+	border-radius:10px;         /*相当于一个圆形的背景*/
+	box-shadow:2px 5px 10px #000;  /*四个参：水平偏移、竖直偏移、半径、颜色*/
+	color:#fff;
+}
+#flash ul li.hover{
+	background:red;
+}
+
+</style>
+</head>
+<body>
+
+<!--1 盒子是flash-->
+<div id="flash">
+	<div class="scroll">
+    	<img src="img/1.jpg" />
+        <img src="img/2.jpg" />
+        <img src="img/3.jpg" />
+    </div>
+    <ul class="button">
+         <li class="hover">1</li>
+         <li>2</li>
+         <li>3</li>
+    </ul>
+
+</div>
+
+</body>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script>
+var _index=0;
+var _height=400;  //定义单张图片的高度
+var _time=null;         //定时器
+//1 鼠标移到按钮的时候轮播
+$("#flash ul.button li").hover(function(){
+	//鼠标放上去要清除定时器，停止播放
+	clearInterval(_time);
+	
+	$(this).addClass("hover").siblings().removeClass("hover");
+	_index=$(this).index();
+	$("#flash .scroll").animate({top:-(_index*_height)},1000);
+},function(){
+	autoPlay();	
+});
+
+//2 自动播放
+function autoPlay(){
+	_index++;
+	var last_index=$(".button li:last").index();
+	//alert(last_index);
+	if(_index>last_index){_index=0;};
+	
+	$(".button li").eq(_index).addClass("hover").siblings().removeClass("hover");
+	$("#flash .scroll").animate({top:-(_index*_height)},1000);
+	_time=setTimeout("autoPlay()",4000);
+}
+autoPlay();
+</script>
+</html>

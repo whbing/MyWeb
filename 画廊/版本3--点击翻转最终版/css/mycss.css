@@ -1,0 +1,228 @@
+*{padding:0;margin:0;}
+body{
+	background-color:#fff;
+	color:#555;
+	font-family:'Avenir Next','Lantinghei SC';
+	font-size:14px;
+}
+.wrap{
+	width:100%;
+	height:600px;
+	position:absolute;
+	top:50%;
+	margin-top:-300px;  /*设置为高度的一半，可以垂直居中*/
+	background-color:#333;	
+	overflow:hidden;
+	
+	/*为wrap增加-webkit-perspective样式*/
+	-webkit-perspective:800px;  /*为了能让3d效果图显示出来,在调试界面可填*/
+	
+}
+
+
+
+/*海报格式*/
+.photo{
+	width:260px;
+	height:320px;
+	
+	position:absolute;
+	z-index:1;
+	box-shadow:0 0 1px rgba(0,0,0,.01);	/*a表示透明度*/	
+	-webkit-transition:all 0.6s;
+	transition:all 0.6s;
+	-moz-transition:all 0.6s; /* Firefox 4 */
+	-o-transition:all 0.6s; /* Opera */	
+}
+.photo .side{
+	width:100%;
+	height:100%;
+	background:#eee;
+	position:absolute;   /*使用绝对定位，相对于其之前已定位的父元素photo*/
+	top:0;
+	right:0;
+	
+	padding:20px;
+	box-sizing:border-box; /*内容和padding都在border内显示*/
+						   /*去掉这句将不能展示3d效果*/
+}
+.photo .side-front{}
+.photo .side-front .image{
+	width:100%;
+	height:250px;
+	line-height:250px;      /*设置了line-height，即使没有这么高，会垂直居中*/
+	overflow:hidden;	    /*超出高度的会隐藏*/		
+}
+.photo .side-front .image img{
+	width:100%;	   			/*相当于上一级100%宽image*/
+	
+}
+.photo .side-front .caption{
+	text-align:center;
+	font-size:16px;
+	line-height:50px;
+}
+.photo .side-back{}
+.photo .side-back .desc{
+	color:#666;
+	font-size:14px;
+	line-height:1.5em;
+}
+/*当前选中的海报样式*/
+.photo_center{
+	width:260px;
+	height:320px;
+	left:50%;          /*当前的照片水平垂直居中*/
+	top:50%;
+	margin:-160px 0 0 -130px;  /*为之前的一半*/
+	z-index:999;               /*不会让其他的遮挡*/
+}
+.photo-wrap{
+	position:absolute;
+	width:100%;
+	height:100%;
+				
+	/*让其子元素都保持一致的3d性*/
+	-webkit-transform-style:preserve-3d;
+	transform-style: preserve-3d;
+	/*给其加样式改变时有动画效果*/
+	-webkit-transition:all 0.6s;
+	transition:all 0.6s;
+	-moz-transition:all 0.6s; /* Firefox 4 */
+	-o-transition:all 0.6s; /* Opera */
+}
+
+.photo-wrap .side-front{
+	transform:rotateY(0deg);
+	-webkit-transform:rotateY(0deg);
+	-ms-transform:rotateY(0deg); 	/* IE 9 */
+	-moz-transform:rotateY(0deg); 	/* Firefox */
+	-o-transform:rotateY(0deg); 	/* Opera */	
+}
+.photo-wrap .side-back{
+	transform:rotateY(180deg);
+	-ms-transform:rotateY(180deg); 	/* IE 9 */
+	-moz-transform:rotateY(180deg); 	/* Firefox */
+	-o-transform:rotateY(180deg); 	/* Opera */
+	-webkit-transform:rotateY(180deg); /*会沿y轴对折（字是反的）*/
+}
+/*通用的side（包括front和back都适用）*/
+.photo-wrap .side{
+	backface-visibility:hidden;
+	-moz-backface-visibility:hidden; 	/* Firefox */
+	-ms-backface-visibility:hidden; 	/* Internet Explorer */
+	-webkit-backface-visibility:hidden;   /*是否可以看到后边（相当于纸背面）*/
+	/*配合transform来用，旋转后能不能透视到后边这里不可以。90度之前都相当于前面*/
+}
+/*前边一个状态时，再给photo_wrap加一个样式*/
+.photo_front .photo-wrap{
+	transform:rotateY(0deg);
+	-webkit-transform:rotateY(0deg);
+	-ms-transform:rotateY(0deg); 	/* IE 9 */
+	-moz-transform:rotateY(0deg); 	/* Firefox */
+	-o-transform:rotateY(0deg); 	/* Opera */	
+}
+/*后边一个状态时，再给photot_wrap加一个样式*/
+.photo_back .photo-wrap{
+	transform:rotateY(180deg);
+	-ms-transform:rotateY(180deg); 	/* IE 9 */
+	-moz-transform:rotateY(180deg); 	/* Firefox */
+	-o-transform:rotateY(180deg); 	/* Opera */
+	-webkit-transform:rotateY(180deg);
+}
+
+/*控制按钮样式*/
+.nav{
+	width:80%;
+	height:30px;
+	line_height:30px;
+	position:absolute;
+	left:10%;
+	bottom:5%;
+	z-index:999;
+	background-color:#fff;
+	text-align:center;
+}
+
+/*普通样式*/
+.mycons{
+	opacity:0;
+	text-align:center;
+	width:30px;
+	height:8px;
+	display:inline-block;
+	vertical-align:middle;
+}
+.nav .i{
+	width:30px;
+	height:30px;
+	display:inline-block;
+	line_height:30px;
+	cursor:pointer;
+	background-color:#aaa;
+	border-radius:50%;
+
+	transform:scale(.6);
+	-ms-transform:scale(.6); 
+	-moz-transform:scale(.6); 
+	-o-transform:scale(.6); 
+	-webkit-transform:scale(.6);
+	
+	transition:all 1s;
+	-webkit-transition:all 1s;
+	-ms-transition:all 1s;
+	-moz-transition:all 1s; /* Firefox 4 */
+	-o-transition:all 1s; /* Opera */
+}
+
+/*当前选中样式*/
+.nav .i_current{
+	transform:scale(1);
+	-ms-transform:scale(1);
+	-moz-transform:scale(1); 
+	-o-transform:scale(1); 
+	-webkit-transform:scale(1);
+}
+.nav .i_current .mycons{
+	opacity:1;
+}
+
+/*背面样式*/
+.nav .i_back{
+	transform:rotateY(-180deg);
+	-ms-transform:rotateY(-180deg); 	/* IE 9 */
+	-moz-transform:rotateY(-180deg); 	/* Firefox */
+	-o-transform:rotateY(-180deg); 	/* Opera */
+	-webkit-transform:rotateY(-180deg);
+	background-color:#6FC;
+}
+
+
+/*****以下为样式优化******/
+.photo{
+	/*以下三个属性是根据photo_center的样式的。主要解决切换闪屏问题*/
+	left:50%;
+	top:50%;
+	margin:-160px 0 0 -130px;
+}
+.photo-wrap {
+	transform-origin:0% 50%;
+	-webkit-transform-origin:0% 50%;
+	-ms-transform-origin:0% 50%;
+	-o-transform-origin:0% 50%;
+	-moz-transform-origin:0% 50%;
+}
+.photo_front .photo-wrap{
+	transform:translate(0px,0px) rotateY(0deg);
+	-webkit-transform:translate(0px,0px) rotateY(0deg);
+	-moz-transform:translate(0px,0px) rotateY(0deg);
+	-o-transform:translate(0px,0px) rotateY(0deg);
+	transform:translate(0px,0px) rotateY(0deg);	
+}
+.photo_back .photo-wrap{
+	transform:translate(260px,0px) rotateY(180deg);
+	-ms-transform:translate(260px,0px) rotateY(180deg);
+	-webkit-transform:translate(260px,0px) rotateY(180deg);
+	-moz-transform:translate(260px,0px) rotateY(180deg);
+	-o-transform:translate(260px,0px) rotateY(180deg);
+}
