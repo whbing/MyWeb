@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<!--
+	1 list-style 是一个简写属性，涵盖了所有其他列表样式属性。
+      常见的是list-style-typelist-style-positionlist-style-image 这三个，
+      所以是包涵与被包涵的关系
+    2 将一个盒子水平居中，除了绝对定位，还可以margin：XX auto;
+    3 left right margin一起用可以实现绝对定位元素水平居中
+    4 给每个li加阴影box-shadow
+    5 让多个span(img)重合在一起，给其加绝对定位即可。
+     （表示每个相对父元素距离，所以重合）
+      写在后面的在最上边显示，前边的被覆盖。
+    6 给span设置高度：将其转化为块元素即可{display:inlie-block;}
+    7 绝对定位写在后边的在最上层显示。
+      如果图层显示的顺序不对，用z-index。
+      注：当且仅当position:absolute才能用z-index
+    8 如果给p标签或文字加圆角，用border-radius:,再结合阴影box-shadow（本案例略）
+    --------------------------------------------------------------
+    实现原理：鼠标点击时，让上边的一张左移或右移，下边的就显示出来了。
+    --------------------------------------------------------------
+    鼠标移上时给光标： {cursor:pointer}
+    
+    9 jquery
+     (1) animate({css样式},speed,callback);   指样式的改变量,最多可加4参
+     (2) 元素顺序的改变append()、prepend():在内部后边加、前边加（相当于在父级内部）
+     				 before()、after():  在外部加         （相当于平行关系）
+         注意：参数如果是对象，表示移动
+     (3) index() 同胞元素的索引。如果测试显示-1，表示没有找到
+     (4) --------------------正则-------------------------
+            用正则表达式
+            [\@]匹配@
+            [\.]匹配.
+            .匹配任意字符
+            +匹配前面内容一次或多次
+            *匹配签名内容0次或多次
+            ()中的内容可以被替换为$1,就是我
+            们要找的部分
+            $1,$2,……可以匹配正则式中(),按顺序编号第一个括号为$1,第二个位$2,以此类推
+            var str1="aaa@hotmail.com";//要截取@到.之间的内容
+            var reg=new RegExp('.*[\@]+(.*)[\.]+.*');
+            var str2=str1.replace(reg,"$1");
+            console.log(str2);
+         ------------------------------------------------
+            <script>
+            var start = '11-11-21';
+            start = start.replace(/-/gm,'');
+            alert(start);
+            </script>
+        -------------------------------------------------
+         本案例直接用的replace(//,'')部分替换功能
+     (5) 循环修改内部通报标签属性：、
+     	    for(var i=0;i<5;i++){
+			   var url="images/show/"+_index+"/"+(i+1)+".jpg"
+			   oImg.eq(i).attr("src",url);
+		    };
+     (6) 点击非图片，非按钮区域时，让其消失。
+     实现原理：
+        按钮和图片都在遮罩层上边显示，当我们点按钮时，点到的是“图片层”，是点不到遮罩层。
+        当移开点遮罩层的时候才是“遮罩层”
+     ----------------------------------------------------
+     (7) 让元素显示和隐藏的几个函数：
+                   show();       hide();
+                   fadeIn();     fadeOut();
+                   slideUp();    slideDown();
+         
+	
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="">
+<meta name="description" content="">
+<title>photo</title>
+
+
+<style>
+*{
+	margin:0;
+	padding:0;
+
+}
+body{
+	background:url(images/bg.jpg)
+}
+
+/*************1 pic***************/
+#pic{
+	/*border:1px solid red;*/
+	width:750px;
+	height:540px;
+	margin:50px auto;    /*auto表示水平方向居中*/
+}
+#pic ul{
+	list-style:none;
+}
+#pic li{
+	width:230px;
+	height:159px;
+	border:5px solid #fff;     /*给边框*/
+	box-shadow:2px 2px 10px #FFF;         /*给盒子加阴影*/
+	float:left;
+	
+	margin:5px;
+	overflow:hidden;
+}
+#pic li img{
+	width:110%;
+}
+/************2 相册开始*****************/
+#show{
+	width:1000px;
+	height:460px;    /*shoiwImg span还有10px的边框*/
+	position:absolute;
+	top:100px;
+	left:0;          /*left right margin一起用可以实现绝对定位元素水平居中*/
+	right:0;
+	margin:auto;
+	display:none;
+	z-index:999;     /*绝对定位才有z-index，这里由于写在遮罩层前边，所以加*/
+}
+/*2.1展示*/
+#show #showImg{
+	width:660px;
+	height:460px;
+	/*border:5px solid #fff;*/       /*这个边框加在每个img上*/
+	
+	position:absolute;
+	left:0;
+	right:0;
+	margin:auto;
+}
+#show #showImg span{                /*span是为了给每个照片加边框*/
+	border:5px solid #fff;
+	width:650px;
+	height:450px;
+	
+	position:absolute;              /*给span加绝对定位是为了让其重合*/
+	top:0;
+	left:0;
+	
+	overflow:hidden;
+}
+#show #showImg img{
+	width:100%;                    /*图片填充容器*/
+}
+/*2.2左右标签*/
+#show #next{
+	cursor:pointer;          /*鼠标移上显示光标*/
+	position:absolute;      
+	right:0;                /*靠近父元素的右边*/
+	top:0;
+	bottom:0;
+	margin:auto;
+	/*border:1px solid red;*/
+	width:100px;
+	height:300px;
+	line-height:300px;
+}
+#show #prev{
+	cursor:pointer;          /*鼠标移上显示光标*/
+	position:absolute;
+	left:0;                  /*靠近父元素的左边*/
+	top:0;
+	bottom:0;
+	margin:auto;
+	/*border:1px solid red;*/
+	width:100px;
+	height:300px;
+	line-height:300px;
+}
+#show p{
+	color:#fff;
+	font-family:"微软雅黑";
+	font-size:10em;
+}
+#show #next p{
+	float:right;
+}
+#show #prev p{
+	float:left;
+}
+/********3 遮罩**********/
+#shadow{
+	width:100%;
+	height:100%;
+	position:absolute;
+	top:0;
+	left:0;
+	display:none;
+	background:rgba(0,0,0,0.5);
+}
+
+/*list-style 是一个简写属性，涵盖了所有其他列表样式属性。常见的是list-style-typelist-style-positionlist-style-image 这三个，所以是包涵与被包涵的关系*/
+
+</style>
+</head>
+<body>
+
+<!--1 盒子是pic-->
+<div id="pic">
+	<ul>
+    	<li><img src="images/main/1.jpg" /></li>
+        <li><img src="images/main/2.jpg" /></li>
+        <li><img src="images/main/3.jpg" /></li>
+        <li><img src="images/main/4.jpg" /></li>
+        <li><img src="images/main/5.jpg" /></li>
+        <li><img src="images/main/6.jpg" /></li>
+        <li><img src="images/main/7.jpg" /></li>
+        <li><img src="images/main/8.jpg" /></li>
+        <li><img src="images/main/9.jpg" /></li>
+    </ul>
+</div>
+<!------------------2 展示----------------->
+<div id="show">
+	<!--2.1 图片-->
+    <div id="showImg">   <!--给每个照片都加一个边框，所以每个img标签前都加标签-->
+    	<span><img src="images/show/0/1.jpg"/></span>
+        <span><img src="images/show/0/2.jpg"/></span>
+        <span><img src="images/show/0/3.jpg"/></span>
+        <span><img src="images/show/0/4.jpg"/></span>
+        <span><img src="images/show/0/5.jpg"/></span>
+    </div>
+    
+    <!--2.2 左右图标-->
+    <span id="next"><p> > </p></span>
+    <span id="prev"><p> < </p></span>
+</div>
+
+<!------------------3 遮罩----------------->
+<div id="shadow">
+	
+</div>
+</body>
+<script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+<script>
+$(function(){
+	$("#show #next").click(function(){
+		
+		//让span（照片）右移，同时showImg左移。
+		//span(照片)右移
+		$("#showImg span:last").animate({"left":"670px"},1000,
+		   function(){
+			   $("#showImg").prepend($(this));
+		       $(this).animate({"left":"0"},1000);
+		   });
+		//整个showImg左移。和上边是同时发生的   
+		$("#showImg").animate({"left":"-660px"},1000,function(){
+			   $(this).animate({"left":"0"},1000);
+		   });
+	});
+	/***********************************************/
+	$("#show #prev").click(function(){   //把第一个显示出来即可
+		
+		$("#showImg span:first").animate({"left":"670px"},1000,
+		   function(){
+			   $("#showImg").append($(this));
+		       $(this).animate({"left":"0"},1000);
+		   });
+		//整个showImg左移。和上边是同时发生的   
+		$("#showImg").animate({"left":"-660px"},1000,function(){
+			   $(this).animate({"left":"0"},1000);
+		   });
+	});
+	
+	/*当点击li（图片文件夹）的时候，让"显示图片部分"显示*/
+	/*显示的内容是对应li里面的图片，假设每个li里固定放5张*/
+	var _index=0;
+	$("#pic ul li").click(function(){
+		$("#shadow").fadeIn(1000);
+		$("#show").fadeIn(1000);
+		//获取文件夹li的索引
+		//alert($(this).index());
+		_index=$(this).index();
+				
+		var oImg=$("#showImg img");
+		/****************替换地址方法一,只换不同的部分**********************/
+	   /*for(var i=0;i<5;i++){
+		    var new_url
+			         =oImg.eq(i).attr("src")
+					  .replace(/\/show\/.*\//,'/show/'+_index+'/');
+	        oImg.eq(i).attr("src",new_url);
+		};*/
+		/****************替换地址方法二,整个地址重写**********************/
+		for(var i=0;i<5;i++){
+			var url="images/show/"+_index+"/"+(i+1)+".jpg"
+			oImg.eq(i).attr("src",url);
+		};
+	});
+	
+	/********点非图片区域（遮罩层）显示消失********************/
+	$("#shadow").click(function(){
+		$("#shadow").fadeOut(1000);
+		$("#show").fadeOut(1000);
+	});
+});
+</script>
+</html>
