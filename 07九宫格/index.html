@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<HTML>
+ <HEAD>
+  <TITLE> 九宫格 </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+  
+<!--
+	1 给每个li（照片）“绝对定位”后，li里的多张照片会重合在一个上。
+      再配合z-index决定哪个照片显示在上边
+-->
+  
+  <style type="text/css">
+	*{ margin:0; padding:0; list-style:none;}
+	img{ border:0;width:180px;height:100px; position:absolute; left:0; top:0; z-index:20;}
+	.main{width:543px;margin:100px auto;}
+	.main li{ width:180px; height:100px; position:relative; float:left; z-index:10; border-bottom:1px solid #fff;border-right:1px solid #fff;}
+	.main li img.default{ z-index:30;}                  /*显示的是z-index比较大的，所以显示这个*/
+	.main ul{width:543px; overflow:hidden; position:relative;}
+	body{background:url("images/bg.jpg") center no-repeat;}
+  </style>
+ </HEAD>
+
+ <BODY>
+	<div class="main">
+		<ul>
+			<li>
+				<img src="images/img1.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/left.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+			</li>
+			<li>
+				<img src="images/img2.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			 <li>
+				<img src="images/img3.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			 <li>
+				<img src="images/img4.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			<li>
+				<img src="images/img5.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			<li>
+				<img src="images/img6.png"class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			<li>
+				<img src="images/img7.png"class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			<li>
+				<img src="images/img8.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+			<li>
+				<img src="images/img9.png" class="default"/>
+				<img src="images/top.jpg"/>
+				<img src="images/right.jpg"/>
+				<img src="images/bottom.jpg"/>
+				<img src="images/left.jpg"/>
+			</li>
+		</ul>
+	</div>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$(".main ul li").hover(function()
+		{
+			var dw = 180;
+			var dh = 100;
+			$(this).css('z-index','20');
+			$(this).find("img").eq(1).stop().animate({top:-dh+'px'},300); //top
+			$(this).find("img").eq(2).stop().animate({left:dw+"px"},300); //right
+			$(this).find("img").eq(3).stop().animate({top:dh+"px"},300); //bottom
+			$(this).find("img").eq(4).stop().animate({left:-dw+"px"},300); //left
+		},function()
+		{
+			$(this).css('z-index','10');
+			$(this).find('img').stop().animate({left:'0',top:'0'},300);
+		});
+	
+	});
+		
+	</script>
+ </BODY>
+</HTML>
