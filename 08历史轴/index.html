@@ -1,0 +1,135 @@
+<html>
+<!--原理：
+    1 左边导航的圆点实际上是背景图片
+      一个li左边留有空间，正好显示这个图片
+    2 小空心圆点变色实际上是两张图片，一张透明的，一张有色的；当加样式时，就显示有色的
+      整个透明的圆点是加在left-nav上在，而每个有色的图片是加在li上的，结合3中所说微调
+    3 background:url("img/nav_cur.png") no-repeat 0px 0px;后边两个表示背景图的坐标，可微调
+    4 background:url("img/1.jpg") center  fixed;
+    ------------------------------------------------------------------
+    5 jquery：
+      (1) var n=parseInt($(window).scrollTop()/$(window).height());
+            /* n为滚动距离占屏幕比例
+             * 当滚动的距离不到浏览器高度 n为0
+             * 当超过一个高，比例即为 1.几，转化后为1
+             * 以此类推
+            */
+      (2) $("#left-nav ul li").eq(n).addClass("current").siblings().removeClass("current");
+
+     小结：本次项目犯的错误：每个li都写在ul中，导致li无兄弟节点siblings
+-->
+<head>
+    <TITLE>历史轴</TITLE>
+    <META charset="utf-8" http-equiv="Content-Type">
+    <META NAME="Author" CONTENT="">
+    <META NAME="Keywords" CONTENT="">
+    <META NAME="Description" CONTENT="">
+<style>
+    *{
+        margin:0;
+        padding:0;
+    }
+    html,body{width:100%;height:100%;}
+    /*屏幕内容*/
+    #content{                                /*给了一个100%的容器*/
+        width:100%;
+        height:100%;
+        background:gray ;
+    }
+    .size{
+        width:100%;                               /*上一级是content，和content的宽窄一样*/
+        height:100%;
+    }
+    #content .div1{
+        background:url("img/1.jpg") center  fixed;       /*内容区域给的是背景图片*/
+    }
+    #content .div2{
+        background:url("img/2.jpg")  center  fixed;     /*加上center 和 fixed 能自动居中*/
+    }
+    #content .div3{
+        background:url("img/3.jpg") center  fixed;
+    }
+    #content .div4{
+        background:url("img/4.jpg") center  fixed;
+    }
+    /*左侧节点导航的布局*/
+    #left-nav{
+        width:100px;
+        height:270px;
+        background:yellow;
+        position:fixed;                           /*上一级就是浏览器了，所以相对于浏览器*/
+        top:30px;
+        left:30px;
+        background:url("img/nav.png") no-repeat;              /*一个图片有四个节点，竖着的*/
+    }
+    #left-nav ul{
+        font-family: "微软雅黑";
+        font-size: 14px;
+        margin-top: 6px;
+    }
+    #left-nav ul li{
+        color:#fff;
+        height:21px;
+        line-height: 21px;                          /*和行高一样，保证文字居中*/
+        margin-bottom: 56px;                       /*每两个列表之间的竖直距离增大*/
+        padding-left: 40px;                        /*列表的左边留有空间*/
+        list-style-type: none;
+    }
+    #left-nav ul li a{
+        color:#fff;
+        text-decoration: none;                     /*去掉下划线*/
+    }
+    /*当当前li选中时，小圆点变色，也就是填充了另外一个有色图片*/
+    #left-nav ul li.current{
+        /********background后边两个值表示背景图的位置*******/
+        background:url("img/nav_cur.png") no-repeat 0px 0px;
+    }
+</style>
+</head>
+<body>
+    <!--屏幕内容-->
+    <div id="content">
+        <div class="div1 size"></div>
+        <div class="div2 size"></div>
+        <div class="div3 size"></div>
+        <div class="div4 size"></div>
+
+    </div>
+    <!--屏幕内容 end-->
+    <!--左侧节点导航-->
+    <div id="left-nav">                <!-- 左侧的多个节点放在一个盒子里-->
+        <ul>
+            <li class="text current"><a href="index.html">首页</a> </li>
+            <li class="text "><a href="index.html">武汉理工</a> </li>
+            <li class="text"><a href="index.html">信息学院</a> </li>
+            <li class="text"><a href="index.html">南湖校区</a> </li>
+        </ul>
+    </div>
+    <!--左侧节点导航 end-->
+</body>
+<script src="js/jquery1.42.min.js"></script>
+<script>
+    /*这样写(原生js，里面可以jq)，或者下边的
+    window.onload=function () {
+    }
+    */
+    $(function (){                                 //当滚动高度，达到本页的3/4时
+        $(window).scroll(function () {
+            var n=parseInt($(window).scrollTop()/$(window).height());
+            /* n为滚动距离占屏幕比例          n的取值为0 1 2 3
+             * 当滚动的距离不到浏览器高度 n为0
+             * 当超过一个高，比例即为 1.几，转化后为1
+             * 以此类推
+            */
+            // alert(n);
+            //alert($(window).height()); //浏览器当前窗口可视区域高度
+            //alert($(document).height()); //浏览器当前窗口文档的高度
+            //alert($(document.body).height());//浏览器当前窗口文档body的高度
+            //alert($(document.body).outerHeight(true));//浏览器当前窗口文档body的总高度 包括border padding margin
+            //$("#left-nav ul li").eq(n).addClass("current").siblings().removeClass("current");
+            $("#left-nav ul li").eq(n).addClass("current").siblings().removeClass("current");
+
+        });
+    })
+</script>
+</html>
