@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>b波动</title>
+<style>
+*{ margin:0; padding:0;}
+html,body,{ width:100%;height:100%;}
+.main{ 
+	height:1000px;
+	background:url(img/h-x5maxact-bg.jpg) no-repeat center center;
+	background-size:cover;
+	position:relative;}
+.show{ width:100%;
+	height:402px;
+	position:absolute;
+	top:210px;
+	overflow:hidden;}
+.show-box{
+	position: absolute;
+	width: 4250px;
+	height: 402px;
+	left:50%;
+	margin-left: -1625px;
+	-webkit-animation:play 5s linear infinite;
+	animation:play 5s linear infinite;
+}
+.show-str{
+	position: absolute;
+	top: 200px;
+	width: 2000px;
+	height: 2px;
+	background: url(img/h-x5maxact-string2.png) repeat scroll 0 0;}
+.show-wave{
+	position: absolute;
+	top: 0;
+	left: 2000px;
+	width: 1250px;
+	height: 402px;
+	background: url(img/h-x5maxact-string1.png) center center no-repeat;
+	background-size: cover;
+}
+	.str1{left:0;}
+	.str2{left:3250px;}
+	.pro{ width:669px; height:341px; margin:0 auto; position:relative; top:230px;}
+@-webkit-keyframes play{
+	from{left:-1600px;}
+	to{left:1600px;}	
+}
+@keyframes play{
+	from{left:-1600px;}
+	to{left:1600px;}	
+}
+</style>
+</head>
+
+<body>
+<div class="main">
+	<div class="show">
+    	<div class="show-box">
+        	<div class="show-str str1"></div>
+            <div class="show-wave stw"></div>
+            <div class="show-str str2"></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

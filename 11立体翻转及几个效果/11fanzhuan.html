@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!--
+    1  CSS3 transform css 2d 3d转换属性
+       在li中开启3d转换，同时在子元素中设置3d属性
+       li{transform-style: preserve-3d;}
+       li .txtbox{transform: translateY(-180px) rotate(0deg) rotateY(0deg);}
+    2  如果鼠标移入改变一种transform，就要写一个li:hover .txtbox{}
+    3  写出一个样式在改变时的过渡效果，加上
+                 transition: all 1s;类似这样
+    4  原理：img占满了li，.txtbox由于块级，会在li下显示
+              给li开启3d效果
+              鼠标移入li:hover时，让.txtbox移到和背景图重合的位置
+              如果让这个效果变化有一个过渡，给其加上一个改变内容和时间（默认瞬间全变）transition
+       注意：li:hover与transition配合使用
+    5  注释掉#wrap ul li下的border看精确的变化
+
+
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>立体翻转</title>
+    <style>
+        *{margin:0; padding:0;}
+        #wrap {
+            width:935px;
+            height:400px;
+            margin:50px auto;
+            /*border: 1px solid red;*/
+            background: #cdd;
+            padding-top: 15px;
+            padding-left:15px;
+        }
+        #wrap ul{
+            list-style: none;
+        }
+        #wrap ul li{               /*li的实际宽高为width height加border等等 这里230*190*/
+            width:220px;
+            height:180px;
+            border:5px solid #fff;
+            overflow: hidden;
+            float: left;
+            position:relative;
+            transform-style: preserve-3d;
+        }
+        #wrap ul li img{
+            /*width:100%;                    /*100%填充li*/
+            height:100%;
+        }
+ /**************第1个li的实验***********/
+        #wrap ul li .txtbox{
+            width:220px;
+            height:182px;
+
+            background: #fff;
+            transform: translateY(0px) rotate(0deg) rotateY(0deg);    /*原始的效果*/
+
+            /*给出.txtbox在有样式改变时，给出他的改变时间*/
+            transition: all 1s;
+        }
+        #wrap ul li:hover .txtbox{                                    /*鼠标移入时的一个效果*/
+            transform: translateY(-185px) rotate(360deg) rotateY(360deg); /*边框占了5*/
+        }
+/*****************第二个li的实验********************/
+        /*给img2加上一个透明度为0的遮罩层，鼠标移上时透明度变为0.5*/
+        #wrap ul li .img2{
+            transition: all 1s;
+        }
+        #wrap ul li:hover .img2{
+            -webkit-transform: scale(1.5);
+            -moz-transform: scale(1.5);
+            -ms-transform: scale(1.5);
+            -o-transform: scale(1.5);
+            transform: scale(1.5);
+        }
+        #wrap ul li .test2{
+            width:220px;
+            height:180px;
+            /*border:1px solid red;*/
+            position: absolute;
+            top:0px;
+            background: rgba(0,0,0,0);
+            transition:all 1s;
+        }
+        #wrap ul li:hover .test2{
+            background: rgba(0,0,0,0.5);
+        }
+        #wrap ul li .test2 p{
+            font-size: 16px;
+            font-family: "微软雅黑";
+            color:#fff;
+            position: absolute;
+            top:20px;
+            left:-225px;
+            -webkit-transition: all 1s;
+            -moz-transition: all 1s;
+            -ms-transition: all 1s;
+            -o-transition: all 1s;
+            transition: all 1s;
+        }
+        #wrap ul li:hover .test2 p{
+            left:20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <ul>
+            <li>         <!--第一个li做transform实验-->
+                <!--原理：img占满了li，.txtbox由于块级，会在li下显示
+                          给li开启3d效果
+                          鼠标移入li:hover时，让.txtbox移到和背景图重合的位置
+                          如果让这个效果变化有一个过渡，给其加上一个改变内容和时间（默认瞬间全变）
+                -->
+                 <img src="img/1.jpg"/>
+                 <div class="txtbox">
+                     <h3>皇家大理工</h3>
+                 </div>
+            </li>
+            <li>                  <!--第2个li做scale实验-->
+                <img class="img2" src="img/2.jpg"/>
+                <div class="test2">
+                     <p>此曲只应天上有</p>
+                </div>
+            </li>
+            <li>
+                <img src="img/3.jpg"/>
+            </li>
+            <li>
+                <img src="img/4.jpg"/>
+            </li>
+            <li>
+                <img src="img/5.jpg"/>
+            </li>
+            <li>
+                <img src="img/6.jpg"/>
+            </li>
+            <li>
+                <img src="img/7.jpg"/>
+            </li>
+            <li>
+                <img src="img/8.jpg"/>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
